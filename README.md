@@ -1,0 +1,2 @@
+# financial_market_indicators
+notion appfinancial_market_indicators
