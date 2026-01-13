@@ -2,7 +2,7 @@ name: Update Notion DB
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # 매일 오전 9시 (UTC 기준)
+    - cron: '0 9 * * *'  # 매일 오전 9시 (UTC) -> 한국 시간 오후 6시 실행
   workflow_dispatch:  # 수동 실행 가능
 
 jobs:
@@ -10,12 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          
       - name: Install dependencies
-        run: pip install requests
+        # requests랑 yfinance 둘 다 설치하도록 수정함!
+        run: pip install requests yfinance
+        
       - name: Run script
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
