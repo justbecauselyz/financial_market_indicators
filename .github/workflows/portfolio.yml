@@ -36,11 +36,5 @@ jobs:
           git config --global user.email "actions@github.com"
           git add portfolio_heatmap.png
           
-          # 변경사항이 있는지 확인하고 있으면 커밋&푸시
-          if git diff --staged --quiet; then
-            echo "변경사항이 없어서 커밋 안 함"
-          else
-            git commit -m "Update portfolio heatmap"
-            # 👇 여기가 핵심! 토큰을 주소에 직접 박아넣는 강력한 방법
-            git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main
-          fi
+          # 변동사항이 있을 때만 커밋
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update portfolio heatmap" && git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main)
