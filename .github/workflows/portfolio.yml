@@ -31,10 +31,16 @@ jobs:
         run: python portfolio.py
         
       - name: Commit Heatmap Image
-        # 파이썬이 만든 이미지를 깃허브에 저장하는 단계
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add portfolio_heatmap.png
-          git commit -m "Update portfolio heatmap" || echo "No changes to commit"
-          git push
+          
+          # 변경사항이 있는지 확인하고 있으면 커밋&푸시
+          if git diff --staged --quiet; then
+            echo "변경사항이 없어서 커밋 안 함"
+          else
+            git commit -m "Update portfolio heatmap"
+            # 👇 여기가 핵심! 토큰을 주소에 직접 박아넣는 강력한 방법
+            git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main
+          fi
