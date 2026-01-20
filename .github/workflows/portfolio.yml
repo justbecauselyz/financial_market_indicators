@@ -1,0 +1,40 @@
+name: Update Portfolio
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # 매일 오후 6시 (한국시간)
+  workflow_dispatch:
+
+jobs:
+  update-portfolio:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write # 저장소에 이미지를 올릴 수 있는 권한 부여
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        # 데이터분석용 라이브러리 대거 추가!
+        run: pip install requests yfinance pandas matplotlib squarify
+        
+      - name: Run Portfolio Script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          PORTFOLIO_DATABASE_ID: ${{ secrets.PORTFOLIO_DATABASE_ID }} # 새 비밀키 이름 확인!
+        run: python portfolio.py
+        
+      - name: Commit Heatmap Image
+        # 파이썬이 만든 이미지를 깃허브에 저장하는 단계
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add portfolio_heatmap.png
+          git commit -m "Update portfolio heatmap" || echo "No changes to commit"
+          git push
